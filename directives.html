@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html ng-app="exampleApp">
+<head>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="ngmodules/angular.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <title>Directives</title>
+
+    <script>
+        angular.module("exampleApp", [])
+            .controller("defaultCtrl", function ($scope) {
+                $scope.todos = [
+                    { action: "Get groceries", complete: false },
+                    { action: "Call plumber", complete: false },
+                    { action: "Buy running shoes", complete: true },
+                    { action: "Buy flowers", complete: false },
+                    { action: "Call family", complete: false },
+                ];
+
+                $scope.settings = {
+                    Row: 'Red',
+                    Columns: 'Blue'
+                };
+
+                $scope.buttonNames = ['Red', 'Blue', 'Green'];
+
+                $scope.data = {
+                    rowColor: "Blue",
+                    columnColor: "Green"
+                };
+
+                $scope.handleEvent = function (e) {
+                    console.log("Event type: " + e.type);
+                    $scope.data.columnColor = e.type == "mouseover" ? "Green": "Blue";
+                };
+
+                $scope.message = "Tap Me!";
+
+                $scope.dataValue = false;
+
+            }).directive("tap", function () {
+            return function (scope, elem, attrs) {
+                 elem.on("touchstart touchend", function () {
+                     scope.$apply(attrs["tap"]);
+                 });
+            }
+        })
+
+    </script>
+
+    <style>
+        td > *:first-child {
+            font-weight: bold;
+        }
+        tr.Red, td.Red { background-color: lightcoral; }
+        tr.Green, td.Green { background-color: lightgreen; }
+        tr.Blue, td.Blue { background-color: lightblue; }
+    </style>
+</head>
+<body>
+    <div id="todoPanel" class="card" ng-controller="defaultCtrl">
+        <h3 class="card-header">To Do List</h3>
+        <div class="well">
+            <span ng-repeat="button in buttonNames">
+                <button class="btn btn-info" ng-click="data.rowColor = button;">
+                    {{ button }}
+                </button>
+            </span>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Action</th>
+                    <th>Done</th>
+                </tr>
+            </thead>
+            <tr ng-repeat="item in todos" ng-class="data.rowColor"
+                ng-mouseenter="handleEvent($event)"
+                ng-mouseleave="handleEvent($event)"
+                ng-click="handleEvent($event)">
+                <td>{{ $index + 1 }}</td>
+                <td>{{ item.action }}</td>
+                <td ng-class="data.columnColor">{{ item.complete }}</td>
+            </tr>
+        </table>
+        <div class="well" tap="message = 'Tapped!">
+            {{ message }}
+        </div>
+
+        <div class="checkbox well">
+            <label>
+                <input type="checkbox" ng-model="dataValue">
+                Set the Data Value
+            </label>
+        </div>
+
+        <button class="btn btn-success" ng-disabled="dataValue">My Button</button>
+    </div>
+</body>
+</html>
+
